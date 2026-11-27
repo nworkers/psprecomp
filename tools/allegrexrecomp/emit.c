@@ -1195,23 +1195,9 @@ static void emit_header(FILE *f, const ectx *c, const emit_opts *o) {
         "\n",
         o->module ? o->module : "(unknown)", an->nfuncs, an->nimports);
     if (c->trampoline) {
-        fprintf(f,
-            "#ifndef PSP_THREAD_LOCAL\n"
-            "#  if defined(__cplusplus)\n"
-            "#    define PSP_THREAD_LOCAL thread_local\n"
-            "#  elif defined(_MSC_VER)\n"
-            "#    define PSP_THREAD_LOCAL __declspec(thread)\n"
-            "#  elif defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L\n"
-            "#    define PSP_THREAD_LOCAL _Thread_local\n"
-            "#  else\n"
-            "#    define PSP_THREAD_LOCAL __thread\n"
-            "#  endif\n"
-            "#endif\n"
-            "extern PSP_THREAD_LOCAL psp_fn_t psp_next;\n"
-            "void psp_run(psp_fn_t fn);\n"
-            "void psp_dispatch_tail(uint32_t addr);\n"
-            "#define PSP_TAIL(fn) { psp_next = (fn); return; }\n"
-            "\n");
+        /* dispatch.h already declares psp_next/psp_run/psp_dispatch_tail and
+         * the generated header includes it. Only the emission macro is ours. */
+        fprintf(f, "#define PSP_TAIL(fn) { psp_next = (fn); return; }\n\n");
     }
     fprintf(f,
         "/* Build with -DPSPRECOMP_TRACE to record every function entry. Costs\n"

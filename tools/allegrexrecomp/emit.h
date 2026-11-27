@@ -42,7 +42,9 @@ typedef struct {
     const a_hints *hints;
 
     /* Emit body-ending transfers as PSP_TAIL(...) and calls through psp_run(...)
-     * so cross-function tail-call chains stay flat on the host stack. */
+     * so cross-function tail-call chains stay flat on the host stack. A corpus
+     * must be re-emitted in full when this is enabled: a unit emitted without
+     * it can leave psp_next set after its caller has already continued. */
     int                     trampoline;
 } emit_opts;
 
